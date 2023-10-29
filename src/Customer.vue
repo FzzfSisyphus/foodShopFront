@@ -15,6 +15,11 @@ let productNumber = ref(20)
 let page = ref(1)
 let pagesize = ref(5)
 
+let describe
+let merchant
+let Price
+let Inventory
+
 try {
   const pageResponse = customerAPI.getProductCount()
   productNumber.value = pageResponse.data.count//maybe the number just in the count
@@ -44,6 +49,15 @@ function getPage(pagevalue) {
 function buy(id) {
   buyId.value = id
   buyflag.value = true
+  try {
+    const response = customerAPI.getDetail(id)
+    describe.value = response.data.describe
+    merchant.value = response.data.merchant
+    Price.value = response.data.Price
+    Inventory.value = response.data.Inventory
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 function confirmbuy() {
@@ -77,6 +91,17 @@ function next_page() {
 
 <template>
   <div v-if="buyflag" class="overlay">
+    <h2>Detail of the product</h2>
+    <dev>
+      <p>describe:</p>
+      <p>{{describe}}</p>
+      <p>merchant:</p>
+      <p>{{merchant}}</p>
+      <p>price:</p>
+      <p>{{Price}}</p>
+      <p>inventory:</p>
+      <p>{{Inventory}}</p>
+    </dev>
     <p>your address please:</p>
     <textarea v-model="userAddress" :placeholder="userAddress"></textarea>
     <p>how many do you want:</p>

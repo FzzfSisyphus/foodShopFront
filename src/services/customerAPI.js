@@ -23,6 +23,14 @@ class customerAPI {
             }
         })
     }
+
+    static getDetail(id){
+        return API().get("/product",{
+            params:{
+                product_id: id
+            }
+        })
+    }
 }
 
 export default customerAPI;
