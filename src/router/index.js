@@ -1,7 +1,8 @@
-import
-{createRouter, createWebHashHistory, createWebHistory} from "vue-router";
+import {createRouter, createWebHashHistory, createWebHistory} from "vue-router";
 
 import StartPage from "../StartPage.vue";
+import Customer from '../Customer.vue';
+import Merchant from '../Merchant.vue';
 
 
 const router = createRouter({
@@ -11,6 +12,16 @@ const router = createRouter({
             path: "/",
             name:"StartPage",
             component: StartPage
+        },
+        {
+            path: "/Customer/:userId",
+            name:"Customer",
+            component: Customer
+        },
+        {
+            path: "/Merchant/:userId",
+            name:"Merchant",
+            component: Merchant
         },
         {
             path: "/StartPage",

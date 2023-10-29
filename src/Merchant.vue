@@ -1,56 +1,123 @@
 <script setup>
 import {ref} from 'vue'
-import customerAPI from './services/customerAPI.js'
+import merchantAPI from './services/merchantAPI'
+import router from "@/router";
 
-let userId = ref(0)
-let products = ref([])
+let userId = ref(router.currentRoute.value.params.userId)
+let productNumber = ref(20)
+let page = ref(1)
+let pagesize = ref(5)
+let products = ref(['',''])
 let add = ref(false)
 
-let newitemName = ref('')
-let newdescribe = ref('')
-let newquantity = ref(0)
-let newprice = ref(0)
-let newpicPath = ref('')
-let newexpireTime = ref('')
 
-// try {
-//   const response = customerAPI.getWarehouse(userId.value)
-//   coupons.value = response.data.coupons;
-//   credit.value = response.data.credit;
-//   let equipt;
-//   for (equipt in response.data) {
-//     equipments.value.push({
-//       itemId: equipt.itemId,
-//       itemName: equipt.itemName,
-//       describe: equipt.describe,
-//       quantity: equipt.quantity,
-//       price: equipt.price,
-//       picPath: equipt.picPath
-//     });
-//   }
-// } catch (error) {
-//   console.log(error)
-// }
+let shop_owner_id = userId.value
+let pic_path = ref('')
+let describe = ref('')
+let price = ref(0)
+let quantity = ref(0)
+
+
+try {
+  const pageResponse = merchantAPI.getProductCount(userId.value)
+  productNumber.value = pageResponse.data.count//maybe the number just in the count
+  //place to modify the page and pagesize according to the product number
+  getPage(1)
+} catch (error) {
+  console.log(error)
+}
+
+function getPage(pagevalue) {
+  try {
+    const productResponse = merchantAPI.getProduct(userId.value, pagevalue, pagesize.value)
+    products.value = []
+    let p;
+    for (p in productResponse.data) {
+      products.value.push({
+        itemId: p.itemId,
+        describe: p.describe,
+        picPath: p.picPath
+      })
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 function getRandomColor() {
   return "hsl(" + Math.random() * 360 + "), 100%, 75%";
 }
 
+// every time add/delete one product, we flash the page to get the new product list
 function newProduct() {
-
+  let data;
+  data = {
+    shop_owner_id,
+    pic_path,
+    describe,
+    price,
+    quantity
+  }
+  try {
+    const response = merchantAPI.createProduct(data)
+    console.log(response.status)
+  } catch (error) {
+    console.log(error)
+  }
+  router.push(`/Merchant/${userid.value}`);
 }
 
-function deleteProduct(itemid){
+function deleteProduct(itemid) {
+  try {
+    const response = merchantAPI.deleteProduct(itemid)
+    console.log(response.status)
+  } catch (error) {
+    console.log(error)
+  }
+  router.push(`/Merchant/${userid.value}`);
+}
 
+function previous_page(){
+  if (page.value <= 1){
+    return
+  }else {
+    page.value = page.value - 1
+    getPage(page.value)
+  }
+}
+
+function next_page(){
+  if (page.value >= (productNumber.value/pagesize.value)){
+    return
+  }else {
+    page.value = page.value + 1
+    getPage(page.value)
+  }
 }
 </script>
 
 <template>
   <div v-if="add" class="overlay">
-    <choosetobuy/>
-    <button @click="newProduct()">confirm</button>
+    <addpro>
+      <h3>Put the information of the product</h3>
+      <br>
+      <p>picture:</p>
+      <textarea v-model="pic_path" :placeholder="pic_path">picture:</textarea>
+      <br>
+      <p>describe:</p>
+      <textarea v-model="describe" :placeholder="describe"></textarea>
+      <br>
+      <p>price:</p>
+      <textarea v-model="price" :placeholder="price"></textarea>
+      <br>
+      <p>quantity:</p>
+      <textarea v-model="quantity" :placeholder="quantity"></textarea>
+      <br>
+    </addpro>
+    <button @click="newProduct">confirm</button>
     <button @click="add=false">close</button>
   </div>
+<!--every time add/delete one product, we flash the page to get the new product list-->
 
   <div>
     <h1>Hi! Welcome to the E-Shop!</h1>
@@ -63,17 +130,16 @@ function deleteProduct(itemid){
       <!--      for the card in the equipments     -->
       <div v-for="product in products">
         <p class="product" :id="product.itemId">
-          <p>picture</p>
-          <p>{{ product.itemName }}</p>
+          <img :src="product.picPath">
           <p>{{ product.describe }}</p>
-          <p>{{ product.quantity }}</p>
-          <p>{{ product.merchant }}</p>
-          <p>{{ product.expireTime }}</p>
-          <p>{{ product.price }}</p>
+          <button @click="deleteProduct(product.itemid)">delete</button>
         </p>
-        <button @click="deleteProduct(product.itemid)">delete</button>
       </div>
     </div>
+
+    <button @click="previous_page">previous</button>
+    <text>{{page}}</text>
+    <button @click="next_page">next</button>
 
   </div>
 </template>

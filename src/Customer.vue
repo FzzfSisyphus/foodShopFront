@@ -1,51 +1,86 @@
 <script setup>
 import {ref} from 'vue'
 import customerAPI from './services/customerAPI.js'
+import router from "@/router";
+import merchantAPI from "@/services/merchantAPI";
 
-let userId = ref(0)
-let products = ref([])
+let userId = ref(router.currentRoute.value.params.userId)
+let products = ref(['', ''])
 let buyflag = ref(false)
 let buyId = ref(0)
+let buyQuantity = ref(0)
 let userAddress = ref('')
 
-// try {
-//   const response = customerAPI.getWarehouse(userId.value)
-//   coupons.value = response.data.coupons;
-//   credit.value = response.data.credit;
-//   let equipt;
-//   for (equipt in response.data) {
-//     equipments.value.push({
-//       itemId: equipt.itemId,
-//       itemName: equipt.itemName,
-//       describe: equipt.describe,
-//       quantity: equipt.quantity,
-//       price: equipt.price,
-//       picPath: equipt.picPath
-//     });
-//   }
-// } catch (error) {
-//   console.log(error)
-// }
+let productNumber = ref(20)
+let page = ref(1)
+let pagesize = ref(5)
 
-function getRandomColor() {
-  return "hsl(" + Math.random() * 360 + "), 100%, 75%";
+try {
+  const pageResponse = customerAPI.getProductCount()
+  productNumber.value = pageResponse.data.count//maybe the number just in the count
+  //place to modify the page and pagesize according to the product number
+  getPage(1)
+} catch (error) {
+  console.log(error)
 }
 
+function getPage(pagevalue) {
+  try {
+    const productResponse = merchantAPI.getProduct(userId.value, pagevalue, pagesize.value)
+    products.value = []
+    let p;
+    for (p in productResponse.data) {
+      products.value.push({
+        itemId: p.itemId,
+        describe: p.describe,
+        picPath: p.picPath
+      })
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 function buy(id) {
   buyId.value = id
-  buyflag = true
+  buyflag.value = true
 }
 
-function confirmbuy(){
-  //push the userid, useraddress and productid to back end.
+function confirmbuy() {
+  //push the quantity and productid to back end.
+  try {
+    const response = customerAPI.buyProduct(buyId.value, buyQuantity.value)
+    console.log(response.status)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+function previous_page() {
+  if (page.value <= 1) {
+    return
+  } else {
+    page.value = page.value - 1
+    getPage(page.value)
+  }
+}
+
+function next_page() {
+  if (page.value >= (productNumber.value / pagesize.value)) {
+    return
+  } else {
+    page.value = page.value + 1
+    getPage(page.value)
+  }
 }
 </script>
 
 <template>
   <div v-if="buyflag" class="overlay">
-    <p>input your address please:</p>
+    <p>your address please:</p>
     <textarea v-model="userAddress" :placeholder="userAddress"></textarea>
+    <p>how many do you want:</p>
+    <textarea v-model="buyQuantity" :placeholder="buyQuantity"></textarea>
     <button @click="confirmbuy">confirm</button>
     <button @click="buyflag=false">close</button>
   </div>
@@ -57,20 +92,15 @@ function confirmbuy(){
       <!--      for the card in the equipments     -->
       <div v-for="product in products">
         <button @click="buy(product.itemId)" class="product" :id="product.itemId">
-          <p>picture</p>
-          <p>{{ product.itemName }}</p>
+          <img :src="product.picPath">
           <p>{{ product.describe }}</p>
-          <p>{{ product.quantity }}</p>
-          <p>{{ product.merchant }}</p>
-          <p>{{ product.expireTime }}</p>
-          <p>{{ product.price }}</p>
         </button>
       </div>
     </div>
 
-    <div>
-      <router-link :to="{path: '/ModeChoose/' + $route.params.username}">back to menu</router-link>
-    </div>
+    <button @click="previous_page">previous</button>
+    <text>{{ page }}</text>
+    <button @click="next_page">next</button>
 
   </div>
 </template>

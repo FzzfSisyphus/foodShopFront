@@ -1,23 +1,28 @@
 import API from "./API";
+import merchantAPI from "@/services/merchantAPI";
 
 class customerAPI {
-    static getWarehouse(userId){
-        return API().get("/warehouse",{
+    static getProductNum(){
+        return API().get("/product")
+    }
+
+    static getProduct(page, pagesize){
+        return API().get("/product",{
             params: {
-                userId: userId
+                page: page,
+                pageSize: pagesize
+            }
+        })
+    }
+
+    static buyProduct(id, quantity){
+        return API().post("/product/buy",{
+            params: {
+                product_id: id,
+                quantity: quantity
             }
         })
     }
 }
 
-class rolltableAPI {
-    static getPrize() {
-        return API().get("/warehouse/rolltable")
-    }
-
-    static winPrize(userId) {
-        return API().post("/warehouse/rolltable", {
-            userId: userId
-        })
-    }
-}
+export default customerAPI;

@@ -1,6 +1,6 @@
 <script setup>
 import {ref} from "vue";
-// import router from "@/router";
+import router from "@/router";
 // import accountAPI from "../services/accountAPI"
 
 let Username = ref('')
@@ -12,26 +12,26 @@ let userid = ref(0)
 let user = ref('')
 
 function Sign() {
-  // unmerrorMessage.value = '';
-  // pwderrorMessage.value = '';
-  // if (Password1.value != Password2.value) {
-  //   console.log("not match");
-  //   pwderrorMessage.value = "Sorry! The password don't match!";
-  // }
-  // if (Password1.value == Password2.value) {
-  //   console.log("matched");
-  //   try {
-  //     const response = accountAPI.signup(Username.value, Password1.value)
-  //     console.log(response);
-  //     console.log("ok");
-  //     userid.value = response.data.userId;
-  //     router.push(`/ModeChoose/${userid.value}`);
+  unmerrorMessage.value = '';
+  pwderrorMessage.value = '';
+  if (Password1.value != Password2.value) {
+    console.log("not match");
+    pwderrorMessage.value = "Sorry! The password don't match!";
+  }
+  if (Password1.value == Password2.value) {
+    console.log("matched");
+    // try {
+    //   const response = accountAPI.signup(Username.value, Password1.value)
+    //   console.log(response);
+    //   console.log("ok");
+    //   userid.value = response.data.userId;
+      router.push(`/ModeChoose/${userid.value}`);
   //   } catch (error) {
   //     console.log(error);
   //     console.log("error");
   //     unmerrorMessage.value = "Sorry! The username have been taken!";
   //   }
-  // }
+  }
 }
 </script>
 
@@ -41,8 +41,8 @@ function Sign() {
   <h4>Start your exciting fight journey by signing up!</h4>
   <br>
   <div id="app">
-    <input type="radio" v-model="user" value="customer"/><label>customer</label>
-    <input type="radio" v-model="user" value="marchant"/><label>marchant</label>
+    <input type="radio" v-model="user" value="Customer"/><label>customer</label>
+    <input type="radio" v-model="user" value="Merchant"/><label>merchant</label>
 <!--    <p>{{ user }}</p>-->
   </div>
   <br>
