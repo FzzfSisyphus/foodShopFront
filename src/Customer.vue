@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue'
+import {ref,onMounted} from 'vue'
 import customerAPI from './services/customerAPI.js'
 
 const props = defineProps({
@@ -7,88 +7,92 @@ const props = defineProps({
   password: String
 })
 
-let products = ref(['', ''])
-let buyflag = ref(false)
-let buyId = ref(0)
-let buyQuantity = ref(0)
-let userAddress = ref('')
+  let products = ref(['', ''])
+  let buyflag = ref(false)
+  let buyId = ref(0)
+  let buyQuantity = ref(0)
+  let userAddress = ref('')
 
-let productNumber = ref(20)
-let page = ref(1)
-let pagesize = ref(5)
+  let productNumber = ref(20)
+  let page = ref(1)
+  let pagesize = ref(5)
 
-let describe
-let merchant
-let Price
-let Inventory
+  let describe
+  let merchant
+  let Price
+  let Inventory
 
-try {
-  const pageResponse = customerAPI.getProductCount()
-  productNumber.value = pageResponse.data.count//maybe the number just in the count
-  //place to modify the page and pagesize according to the product number
-  getPage(1)
-} catch (error) {
-  console.log(error)
-}
 
-function getPage(pagevalue) {
-  try {
-    const productResponse = customerAPI.getProduct(pagevalue, pagesize.value)
-    products.value = []
-    let p;
-    for (p in productResponse.data) {
-      products.value.push({
-        itemId: p.itemId,
-        describe: p.describe,
-        picPath: p.picPath
-      })
+  onMounted(() => {
+    try {
+      const pageResponse = customerAPI.getProductCount()
+      productNumber.value = pageResponse.data.count//maybe the number just in the count
+      //place to modify the page and pagesize according to the product number
+      getPage(1)
+    } catch (error) {
+      console.log(error)
     }
-  } catch (error) {
-    console.log(error)
-  }
-}
+  });
 
-function buy(id) {
-  buyId.value = id
-  buyflag.value = true
-  try {
-    const response = customerAPI.getDetail(id)
-    describe.value = response.data.describe
-    merchant.value = response.data.merchant
-    Price.value = response.data.Price
-    Inventory.value = response.data.Inventory
-  } catch (error) {
-    console.log(error)
-  }
-}
 
-function confirmbuy() {
-  //push the quantity and productid to back end.
-  try {
-    const response = customerAPI.buyProduct(buyId.value, buyQuantity.value)
-    console.log(response.status)
-  } catch (error) {
-    console.log(error)
+  function getPage(pagevalue) {
+    try {
+      const productResponse = customerAPI.getProduct(pagevalue, pagesize.value)
+      products.value = []
+      let p;
+      for (p in productResponse.data) {
+        products.value.push({
+          itemId: p.itemId,
+          describe: p.describe,
+          picPath: p.picPath
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
-}
 
-function previous_page() {
-  if (page.value <= 1) {
-    return
-  } else {
-    page.value = page.value - 1
-    getPage(page.value)
+  function buy(id) {
+    buyId.value = id
+    buyflag.value = true
+    try {
+      const response = customerAPI.getDetail(id)
+      describe.value = response.data.describe
+      merchant.value = response.data.merchant
+      Price.value = response.data.Price
+      Inventory.value = response.data.Inventory
+    } catch (error) {
+      console.log(error)
+    }
   }
-}
 
-function next_page() {
-  if (page.value >= (productNumber.value / pagesize.value)) {
-    return
-  } else {
-    page.value = page.value + 1
-    getPage(page.value)
+  function confirmbuy() {
+    //push the quantity and productid to back end.
+    try {
+      const response = customerAPI.buyProduct(buyId.value, buyQuantity.value)
+      console.log(response.status)
+    } catch (error) {
+      console.log(error)
+    }
   }
-}
+
+  function previous_page() {
+    if (page.value <= 1) {
+      return
+    } else {
+      page.value = page.value - 1
+      getPage(page.value)
+    }
+  }
+
+  function next_page() {
+    if (page.value >= (productNumber.value / pagesize.value)) {
+      return
+    } else {
+      page.value = page.value + 1
+      getPage(page.value)
+    }
+  }
 </script>
 
 <template>
