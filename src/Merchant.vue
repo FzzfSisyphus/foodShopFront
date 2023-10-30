@@ -9,7 +9,7 @@ const props = defineProps({
 
 let productNumber = ref(20)
 let page = ref(1)
-let pagesize = ref(5)
+let pagesize = ref(10)
 let products = ref(['', ''])
 let add = ref(false)
 
@@ -24,8 +24,7 @@ let quantity = ref(0)
   });
   const load = async() => {
     try {
-      const pageResponse = await merchantAPI.getProductCount(props.username.value)
-     
+      const pageResponse = await merchantAPI.getProductCount(props.username)
       productNumber.value = pageResponse.data.count//maybe the number just in the count
       //place to modify the page and pagesize according to the product number
       getPage(1)
@@ -37,7 +36,8 @@ let quantity = ref(0)
 
   const getPage  = async(pagevalue) => {
     try {
-      const productResponse = await merchantAPI.getProduct(props.username.value, pagevalue, pagesize.value)
+      const productResponse = await merchantAPI.getProduct(props.username, pagevalue, pagesize.value)
+      console.log(productResponse)
       products.value = []
       let p;
       for (let i = 0; i < productResponse.data.data.length; i++) {
@@ -170,7 +170,7 @@ let quantity = ref(0)
 }
 
 .productContainer {
-  max-width: 1000px;
+  max-width: 100%;
   padding: 10px;
   margin: 0 auto;
   display: flex;

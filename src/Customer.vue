@@ -13,8 +13,6 @@ const props = defineProps({
   let buyQuantity = ref(0)
   let userAddress = ref('')
 
-  
-
   let productNumber = ref(20)
   let page = ref(1)
   let pagesize = ref(5)
@@ -23,6 +21,7 @@ const props = defineProps({
   let merchant
   let Price
   let Inventory
+  let expireTime
 
   onMounted(() => {
     load();
@@ -72,9 +71,10 @@ const props = defineProps({
     try {
       const response = await customerAPI.getDetail(id)
       describe.value = response.data.describe
-      merchant.value = response.data.merchant
+      merchant.value = response.data.shopOwnerName
       Price.value = response.data.Price
-      Inventory.value = response.data.Inventory
+      Inventory.value = response.data.quantity
+      expireTime.value = response.data.expireTime
     } catch (error) {
       console.log(error)
     }
@@ -126,6 +126,8 @@ const props = defineProps({
           <p>{{ Price }}</p>
           <p>inventory:</p>
           <p>{{ Inventory }}</p>
+          <p>expireTime:</p>
+          <p>{{ expireTime }}</p>
         </dev>
         <p>your name: {{this.username}}</p>
         <p>your address please:</p>
@@ -144,8 +146,6 @@ const props = defineProps({
 
     <div class="productContainer">
       <!--      for the card in the equipments     -->
-      
-      
       <div v-for="product in products">
         <button @click="buy(product.productId)" class="product" :id="product.productId">
           <img class="itemPic" :src="product.picPath">
@@ -182,7 +182,7 @@ const props = defineProps({
 }
 
 .productContainer {
-  max-width: 1000px;
+  max-width: 100%;
   padding: 10px;
   margin: 0 auto;
   display: flex;

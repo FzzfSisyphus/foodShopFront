@@ -4,28 +4,28 @@ class merchantAPI {
     static getProductCount(userName) {
         return API().get('/product/count', {
             params: {
-                username: userName
+                userName: userName
             }
         })
     }
 
-    static getProduct(userName, page, pagesize) {
+    static getProduct(userName, page, pageSize) {
         return API().get('/productList', {
             params: {
                 userName: userName,
                 page: page,
-                pageSize: pagesize
+                pageSize: pageSize
             }
         })
     }
     static createProduct(data) {
         return API().post('/product', {
             params: {
-                username: data.username,
-                pic_path: data.pic_path,
+                userName: data.username,
                 describe: data.describe,
                 price: data.price,
-                quantity: data.quantity
+                picPath: data.pic_path,
+                quantity: data.quantity,
             }
         })
     }
