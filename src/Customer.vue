@@ -1,10 +1,12 @@
 <script setup>
 import {ref} from 'vue'
 import customerAPI from './services/customerAPI.js'
-import router from "@/router";
-import merchantAPI from "@/services/merchantAPI";
 
-let userId = ref(router.currentRoute.value.params.userId)
+const props = defineProps({
+  username: String,
+  password: String
+})
+
 let products = ref(['', ''])
 let buyflag = ref(false)
 let buyId = ref(0)
@@ -31,7 +33,7 @@ try {
 
 function getPage(pagevalue) {
   try {
-    const productResponse = merchantAPI.getProduct(userId.value, pagevalue, pagesize.value)
+    const productResponse = customerAPI.getProduct(pagevalue, pagesize.value)
     products.value = []
     let p;
     for (p in productResponse.data) {
@@ -91,27 +93,34 @@ function next_page() {
 
 <template>
   <div v-if="buyflag" class="overlay">
-    <h2>Detail of the product</h2>
-    <dev>
-      <p>describe:</p>
-      <p>{{describe}}</p>
-      <p>merchant:</p>
-      <p>{{merchant}}</p>
-      <p>price:</p>
-      <p>{{Price}}</p>
-      <p>inventory:</p>
-      <p>{{Inventory}}</p>
+    <dev v-if="this.username == ''">
+      <h3>Please Sign in or Sign up to continue process!</h3>
     </dev>
-    <p>your address please:</p>
-    <textarea v-model="userAddress" :placeholder="userAddress"></textarea>
-    <p>how many do you want:</p>
-    <textarea v-model="buyQuantity" :placeholder="buyQuantity"></textarea>
-    <button @click="confirmbuy">confirm</button>
+    <dev v-else>
+      <h2>Detail of the product</h2>
+      <dev>
+        <p>describe:</p>
+        <p>{{ describe }}</p>
+        <p>merchant:</p>
+        <p>{{ merchant }}</p>
+        <p>price:</p>
+        <p>{{ Price }}</p>
+        <p>inventory:</p>
+        <p>{{ Inventory }}</p>
+      </dev>
+      <p>your name: {{this.username}}</p>
+      <p>your address please:</p>
+      <textarea v-model="userAddress" :placeholder="userAddress"></textarea>
+      <p>how many do you want:</p>
+      <textarea v-model="buyQuantity" :placeholder="buyQuantity"></textarea>
+      <br>
+      <button @click="confirmbuy">confirm</button>
+    </dev>
     <button @click="buyflag=false">close</button>
   </div>
 
   <div>
-    <h1>Hi! Welcome to the E-Shop!</h1>
+    <h2>Enjoy Shopping</h2>
 
     <div class="productContainer">
       <!--      for the card in the equipments     -->
