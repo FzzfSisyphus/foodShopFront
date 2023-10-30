@@ -23,9 +23,13 @@ let Price
 let Inventory
 
 try {
+  console.log("Start")
   const pageResponse = customerAPI.getProductCount()
   productNumber.value = pageResponse.data.count//maybe the number just in the count
   //place to modify the page and pagesize according to the product number
+  console.log(pageResponse)
+  console.log(productNumber.value)
+  console.log("get")
   getPage(1)
 } catch (error) {
   console.log(error)

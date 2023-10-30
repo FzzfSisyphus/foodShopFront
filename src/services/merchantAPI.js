@@ -10,7 +10,7 @@ class merchantAPI {
     }
 
     static getProduct(userid, page, pagesize) {
-        return API().get('/product/count', {
+        return API().get('/productList', {
             params: {
                 userId: userid,
                 page: page,

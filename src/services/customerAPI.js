@@ -2,12 +2,12 @@ import API from "./API";
 import merchantAPI from "@/services/merchantAPI";
 
 class customerAPI {
-    static getProductNum(){
-        return API().get("/product")
+    static getProductCount(){
+        return API().get("/product/count")
     }
 
     static getProduct(page, pagesize){
-        return API().get("/product",{
+        return API().get("/productList",{
             params: {
                 page: page,
                 pageSize: pagesize
