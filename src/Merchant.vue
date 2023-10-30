@@ -1,3 +1,52 @@
+<template>
+  <div v-if="add" class="overlay">
+    <addpro>
+      <h3>Put the information of the product</h3>
+      <br>
+      <p>picture:</p>
+      <textarea v-model="pic_path" :placeholder="pic_path">picture:</textarea>
+      <br>
+      <p>describe:</p>
+      <textarea v-model="describe" :placeholder="describe"></textarea>
+      <br>
+      <p>price:</p>
+      <textarea v-model="price" :placeholder="price"></textarea>
+      <br>
+      <p>quantity:</p>
+      <textarea v-model="quantity" :placeholder="quantity"></textarea>
+      <br>
+    </addpro>
+    <button @click="newProduct">confirm</button>
+    <button @click="add=false">close</button>
+  </div>
+<!--every time add/delete one product, we flash the page to get the new product list-->
+
+  <div>
+    <h1>Hi! Welcome to the E-Shop!</h1>
+
+    <h2>Your products:</h2>
+
+    <button @click="add=true">Add a new product</button>
+
+    <div class="productContainer">
+      <!--      for the card in the equipments     -->
+      <div v-for="product in products">
+        <p class="product" :id="product.itemId">
+          <img :src="product.picPath">
+          <p>{{ product.describe }}</p>
+          <button @click="deleteProduct(product.itemid)">delete</button>
+        </p>
+      </div>
+    </div>
+
+    <button @click="previous_page">previous</button>
+    <text>{{page}}</text>
+    <button @click="next_page">next</button>
+
+  </div>
+</template>
+
+
 <script setup>
 import {ref} from 'vue'
 import merchantAPI from './services/merchantAPI'
@@ -95,54 +144,6 @@ function next_page(){
   }
 }
 </script>
-
-<template>
-  <div v-if="add" class="overlay">
-    <addpro>
-      <h3>Put the information of the product</h3>
-      <br>
-      <p>picture:</p>
-      <textarea v-model="pic_path" :placeholder="pic_path">picture:</textarea>
-      <br>
-      <p>describe:</p>
-      <textarea v-model="describe" :placeholder="describe"></textarea>
-      <br>
-      <p>price:</p>
-      <textarea v-model="price" :placeholder="price"></textarea>
-      <br>
-      <p>quantity:</p>
-      <textarea v-model="quantity" :placeholder="quantity"></textarea>
-      <br>
-    </addpro>
-    <button @click="newProduct">confirm</button>
-    <button @click="add=false">close</button>
-  </div>
-<!--every time add/delete one product, we flash the page to get the new product list-->
-
-  <div>
-    <h1>Hi! Welcome to the E-Shop!</h1>
-
-    <h2>Your products:</h2>
-
-    <button @click="add=true">Add a new product</button>
-
-    <div class="productContainer">
-      <!--      for the card in the equipments     -->
-      <div v-for="product in products">
-        <p class="product" :id="product.itemId">
-          <img :src="product.picPath">
-          <p>{{ product.describe }}</p>
-          <button @click="deleteProduct(product.itemid)">delete</button>
-        </p>
-      </div>
-    </div>
-
-    <button @click="previous_page">previous</button>
-    <text>{{page}}</text>
-    <button @click="next_page">next</button>
-
-  </div>
-</template>
 
 <style scoped>
 .overlay {
