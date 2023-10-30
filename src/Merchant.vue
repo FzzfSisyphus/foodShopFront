@@ -1,66 +1,19 @@
-<template>
-  <div v-if="add" class="overlay">
-    <addpro>
-      <h3>Put the information of the product</h3>
-      <br>
-      <p>picture:</p>
-      <textarea v-model="pic_path" :placeholder="pic_path">picture:</textarea>
-      <br>
-      <p>describe:</p>
-      <textarea v-model="describe" :placeholder="describe"></textarea>
-      <br>
-      <p>price:</p>
-      <textarea v-model="price" :placeholder="price"></textarea>
-      <br>
-      <p>quantity:</p>
-      <textarea v-model="quantity" :placeholder="quantity"></textarea>
-      <br>
-    </addpro>
-    <button @click="newProduct">confirm</button>
-    <button @click="add=false">close</button>
-  </div>
-<!--every time add/delete one product, we flash the page to get the new product list-->
-
-  <div>
-    <h1>Hi! Welcome to the E-Shop!</h1>
-
-    <h2>Your products:</h2>
-
-    <button @click="add=true">Add a new product</button>
-
-    <div class="productContainer">
-      <!--      for the card in the equipments     -->
-      <div v-for="product in products">
-        <p class="product" :id="product.itemId">
-          <img :src="product.picPath">
-          <p>{{ product.describe }}</p>
-          <button @click="deleteProduct(product.itemid)">delete</button>
-        </p>
-      </div>
-    </div>
-
-    <button @click="previous_page">previous</button>
-    <text>{{page}}</text>
-    <button @click="next_page">next</button>
-
-  </div>
-</template>
-
-
 <script setup>
 import {ref} from 'vue'
 import merchantAPI from './services/merchantAPI'
-import router from "@/router";
 
-let userId = ref(router.currentRoute.value.params.userId)
+const props = defineProps({
+  username: String,
+  password: String
+})
+
 let productNumber = ref(20)
 let page = ref(1)
 let pagesize = ref(5)
-let products = ref(['',''])
+let products = ref(['', ''])
 let add = ref(false)
 
 
-let shop_owner_id = userId.value
 let pic_path = ref('')
 let describe = ref('')
 let price = ref(0)
@@ -68,7 +21,7 @@ let quantity = ref(0)
 
 
 try {
-  const pageResponse = merchantAPI.getProductCount(userId.value)
+  const pageResponse = merchantAPI.getProductCount(this.username)
   productNumber.value = pageResponse.data.count//maybe the number just in the count
   //place to modify the page and pagesize according to the product number
   getPage(1)
@@ -78,7 +31,7 @@ try {
 
 function getPage(pagevalue) {
   try {
-    const productResponse = merchantAPI.getProduct(userId.value, pagevalue, pagesize.value)
+    const productResponse = merchantAPI.getProduct(this.username, pagevalue, pagesize.value)
     products.value = []
     let p;
     for (p in productResponse.data) {
@@ -101,7 +54,7 @@ function getRandomColor() {
 function newProduct() {
   let data;
   data = {
-    shop_owner_id,
+    username,
     pic_path,
     describe,
     price,
@@ -113,7 +66,6 @@ function newProduct() {
   } catch (error) {
     console.log(error)
   }
-  router.push(`/Merchant/${userid.value}`);
 }
 
 function deleteProduct(itemid) {
@@ -123,27 +75,80 @@ function deleteProduct(itemid) {
   } catch (error) {
     console.log(error)
   }
-  router.push(`/Merchant/${userid.value}`);
 }
 
-function previous_page(){
-  if (page.value <= 1){
+function previous_page() {
+  if (page.value <= 1) {
     return
-  }else {
+  } else {
     page.value = page.value - 1
     getPage(page.value)
   }
 }
 
-function next_page(){
-  if (page.value >= (productNumber.value/pagesize.value)){
+function next_page() {
+  if (page.value >= (productNumber.value / pagesize.value)) {
     return
-  }else {
+  } else {
     page.value = page.value + 1
     getPage(page.value)
   }
 }
 </script>
+
+<template>
+  <div v-if="add" class="overlay">
+    <addpro>
+      <h3>Put the information of the product</h3>
+      <br>
+      <p>picture:</p>
+      <textarea v-model="pic_path" :placeholder="pic_path">picture:</textarea>
+      <br>
+      <p>describe:</p>
+      <textarea v-model="describe" :placeholder="describe"></textarea>
+      <br>
+      <p>price:</p>
+      <textarea v-model="price" :placeholder="price"></textarea>
+      <br>
+      <p>quantity:</p>
+      <textarea v-model="quantity" :placeholder="quantity"></textarea>
+      <br>
+    </addpro>
+    <button @click="newProduct">confirm</button>
+    <button @click="add=false">close</button>
+  </div>
+  <!--every time add/delete one product, we flash the page to get the new product list-->
+
+  <div>
+    <h2>Manage your store!</h2>
+
+    <button @click="add=true">Add a new product</button>
+
+    <h3>Your products:</h3>
+
+    <dev v-if="productNumber == 0">
+      <h4>Seems you don't have any product...</h4>
+      <h4>Create your first by click the right top button!</h4>
+    </dev>
+    <dev v-else>
+      <div class="productContainer">
+        <!--      for the card in the equipments     -->
+        <div v-for="product in products">
+          <p class="product" :id="product.itemId">
+            <img :src="product.picPath">
+            <p>{{ product.describe }}</p>
+            <button @click="deleteProduct(product.itemid)">delete</button>
+          </p>
+        </div>
+      </div>
+    </dev>
+
+    <button @click="previous_page">previous</button>
+    <text>{{ page }}</text>
+    <button @click="next_page">next</button>
+
+  </div>
+</template>
 
 <style scoped>
 .overlay {

@@ -15,3 +15,5 @@ class accountAPI {
         })
     }
 }
+
+export default accountAPI;
