@@ -13,6 +13,8 @@ const props = defineProps({
   let buyQuantity = ref(0)
   let userAddress = ref('')
 
+  
+
   let productNumber = ref(20)
   let page = ref(1)
   let pagesize = ref(5)
@@ -22,41 +24,53 @@ const props = defineProps({
   let Price
   let Inventory
 
-
   onMounted(() => {
+    load();
+  });
+
+  const load = async() => {
     try {
-      const pageResponse = customerAPI.getProductCount()
+      const pageResponse = await customerAPI.getProductCount()
+      console.log("here")
       productNumber.value = pageResponse.data.count//maybe the number just in the count
+      console.log(productNumber.value)
+      pagesize.value = productNumber.value
       //place to modify the page and pagesize according to the product number
       getPage(1)
     } catch (error) {
       console.log(error)
     }
-  });
+  }
 
-
-  function getPage(pagevalue) {
+  const getPage= async(pagevalue) =>  {
     try {
-      const productResponse = customerAPI.getProduct(pagevalue, pagesize.value)
+      const productResponse = await customerAPI.getProduct(pagevalue, pagesize.value)
       products.value = []
       let p;
-      for (p in productResponse.data) {
+
+      console.log(productResponse.data.data)
+      //products.value = productResponse.data.data
+      
+      for (let i = 0; i < productResponse.data.data.length; i++) {
+        p = productResponse.data.data[i]
+        console.log(p)
         products.value.push({
-          itemId: p.itemId,
-          describe: p.describe,
-          picPath: p.picPath
+            productId: p.productId,
+            describe: p.describe,
+            picPath: p.picPath
         })
       }
+      console.log(products.value)
     } catch (error) {
       console.log(error)
     }
   }
 
-  function buy(id) {
+  const buy= async (id) => {
     buyId.value = id
     buyflag.value = true
     try {
-      const response = customerAPI.getDetail(id)
+      const response = await customerAPI.getDetail(id)
       describe.value = response.data.describe
       merchant.value = response.data.merchant
       Price.value = response.data.Price
@@ -75,7 +89,7 @@ const props = defineProps({
       console.log(error)
     }
   }
-
+  
   function previous_page() {
     if (page.value <= 1) {
       return
@@ -101,23 +115,25 @@ const props = defineProps({
       <h3 class="backfont">Please Sign in or Sign up to continue process!</h3>
     </dev>
     <dev v-else>
-      <h2>Detail of the product</h2>
-      <dev>
-        <p>describe:</p>
-        <p>{{ describe }}</p>
-        <p>merchant:</p>
-        <p>{{ merchant }}</p>
-        <p>price:</p>
-        <p>{{ Price }}</p>
-        <p>inventory:</p>
-        <p>{{ Inventory }}</p>
-      </dev>
-      <p>your name: {{this.username}}</p>
-      <p>your address please:</p>
-      <textarea v-model="userAddress" :placeholder="userAddress"></textarea>
-      <p>how many do you want:</p>
-      <textarea v-model="buyQuantity" :placeholder="buyQuantity"></textarea>
-      <br>
+      <div class="backfont">
+        <h2>Detail of the product</h2>
+        <dev>
+          <p>describe:</p>
+          <p>{{ describe }}</p>
+          <p>merchant:</p>
+          <p>{{ merchant }}</p>
+          <p>price:</p>
+          <p>{{ Price }}</p>
+          <p>inventory:</p>
+          <p>{{ Inventory }}</p>
+        </dev>
+        <p>your name: {{this.username}}</p>
+        <p>your address please:</p>
+        <textarea v-model="userAddress" :placeholder="userAddress"></textarea>
+        <p>how many do you want:</p>
+        <textarea v-model="buyQuantity" :placeholder="buyQuantity"></textarea>
+        <br>
+      </div>
       <button @click="confirmbuy">confirm</button>
     </dev>
     <button @click="buyflag=false">close</button>
@@ -128,9 +144,11 @@ const props = defineProps({
 
     <div class="productContainer">
       <!--      for the card in the equipments     -->
+      
+      
       <div v-for="product in products">
-        <button @click="buy(product.itemId)" class="product" :id="product.itemId">
-          <img :src="product.picPath">
+        <button @click="buy(product.productId)" class="product" :id="product.productId">
+          <img class="itemPic" :src="product.picPath">
           <p>{{ product.describe }}</p>
         </button>
       </div>
@@ -146,6 +164,10 @@ const props = defineProps({
 <style scoped>
 .backfont{
   color:azure;
+}
+.itemPic{
+  width: 100%;
+  height: 60%;
 }
 .overlay {
   position: absolute;

@@ -1,31 +1,31 @@
 import API from "./API";
 
 class merchantAPI {
-    static getProductCount(userid) {
+    static getProductCount(userName) {
         return API().get('/product/count', {
             params: {
-                userId: userid
+                username: userName
             }
         })
     }
 
-    static getProduct(userid, page, pagesize) {
-        return API().get('/product/count', {
+    static getProduct(userName, page, pagesize) {
+        return API().get('/productList', {
             params: {
-                userId: userid,
+                userName: userName,
                 page: page,
                 pageSize: pagesize
             }
         })
     }
     static createProduct(data) {
-        return API().get('/product/count', {
+        return API().post('/product', {
             params: {
-                userId: data.shop_owner_id.value,
-                pic_path: data.pic_path.value,
-                describe: data.describe.value,
-                price: data.price.value,
-                quantity: data.quantity.value
+                username: data.username,
+                pic_path: data.pic_path,
+                describe: data.describe,
+                price: data.price,
+                quantity: data.quantity
             }
         })
     }

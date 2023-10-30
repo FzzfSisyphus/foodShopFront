@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue'
+import {ref,onMounted} from 'vue'
 import merchantAPI from './services/merchantAPI'
 
 const props = defineProps({
@@ -19,81 +19,87 @@ let describe = ref('')
 let price = ref(0)
 let quantity = ref(0)
 
-
-try {
-  const pageResponse = merchantAPI.getProductCount(this.username)
-  productNumber.value = pageResponse.data.count//maybe the number just in the count
-  //place to modify the page and pagesize according to the product number
-  getPage(1)
-} catch (error) {
-  console.log(error)
-}
-
-function getPage(pagevalue) {
-  try {
-    const productResponse = merchantAPI.getProduct(this.username, pagevalue, pagesize.value)
-    products.value = []
-    let p;
-    for (p in productResponse.data) {
-      products.value.push({
-        itemId: p.itemId,
-        describe: p.describe,
-        picPath: p.picPath
-      })
+  onMounted(() => {
+      load();
+  });
+  const load = async() => {
+    try {
+      const pageResponse = await merchantAPI.getProductCount(props.username.value)
+     
+      productNumber.value = pageResponse.data.count//maybe the number just in the count
+      //place to modify the page and pagesize according to the product number
+      getPage(1)
+    } catch (error) {
+      console.log(error)
     }
-  } catch (error) {
-    console.log(error)
   }
-}
 
-function getRandomColor() {
-  return "hsl(" + Math.random() * 360 + "), 100%, 75%";
-}
+
+  const getPage  = async(pagevalue) => {
+    try {
+      const productResponse = await merchantAPI.getProduct(props.username.value, pagevalue, pagesize.value)
+      products.value = []
+      let p;
+      for (let i = 0; i < productResponse.data.data.length; i++) {
+        p = productResponse.data.data[i]
+        console.log(p)
+        products.value.push({
+            productId: p.productId,
+            describe: p.describe,
+            picPath: p.picPath
+        })
+      }
+      
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
 // every time add/delete one product, we flash the page to get the new product list
-function newProduct() {
-  let data;
-  data = {
-    username,
-    pic_path,
-    describe,
-    price,
-    quantity
+  const newProduct = async() =>{
+    let data;
+    let username = props.username.value
+    data = {
+      username,
+      pic_path,
+      describe,
+      price,
+      quantity
+    }
+    try {
+      const response = await merchantAPI.createProduct(data)
+      console.log(response.status)
+    } catch (error) {
+      console.log(error)
+    }
   }
-  try {
-    const response = merchantAPI.createProduct(data)
-    console.log(response.status)
-  } catch (error) {
-    console.log(error)
-  }
-}
 
-function deleteProduct(itemid) {
-  try {
-    const response = merchantAPI.deleteProduct(itemid)
-    console.log(response.status)
-  } catch (error) {
-    console.log(error)
+  function deleteProduct(itemid) {
+    try {
+      const response = merchantAPI.deleteProduct(itemid)
+      console.log(response.status)
+    } catch (error) {
+      console.log(error)
+    }
   }
-}
 
-function previous_page() {
-  if (page.value <= 1) {
-    return
-  } else {
-    page.value = page.value - 1
-    getPage(page.value)
+  function previous_page() {
+    if (page.value <= 1) {
+      return
+    } else {
+      page.value = page.value - 1
+      getPage(page.value)
+    }
   }
-}
 
-function next_page() {
-  if (page.value >= (productNumber.value / pagesize.value)) {
-    return
-  } else {
-    page.value = page.value + 1
-    getPage(page.value)
+  function next_page() {
+    if (page.value >= (productNumber.value / pagesize.value)) {
+      return
+    } else {
+      page.value = page.value + 1
+      getPage(page.value)
+    }
   }
-}
 </script>
 
 <template>
