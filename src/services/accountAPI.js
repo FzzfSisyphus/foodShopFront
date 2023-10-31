@@ -2,17 +2,14 @@ import API from "./API";
 
 class accountAPI {
     static login(userName, password) {
-        return API().post('/login', {
+        return API('http://localhost:8001/consumers/user/basic-auth').post('/login', {
             userName: userName,
             password: password
         })
     }
 
-    static signup(userName, password) {
-        return API().post('/signup', {
-            userName: userName,
-            password: password
-        })
+    static signup(formData) {
+        return API('http://localhost:8001/consumers/user').post('/basic-auth',formData)
     }
 }
 

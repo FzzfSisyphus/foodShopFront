@@ -19,22 +19,10 @@ class merchantAPI {
         })
     }
     static createProduct(data) {
-        return API().post('/product', {
-            params: {
-                userName: data.username,
-                describe: data.describe,
-                price: data.price,
-                picPath: data.pic_path,
-                quantity: data.quantity,
-            }
-        })
+        return API().post('/product', data)
     }
     static deleteProduct(productid) {
-        return API().delete('/product/value', {
-            params: {
-                product_id: productid
-            }
-        })
+        return API().delete('/product/'+productid)
     }
 }
 

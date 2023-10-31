@@ -15,19 +15,22 @@ class customerAPI {
         })
     }
 
-    static buyProduct(id, quantity){
-        return API().post("/product/buy",{
-            params: {
-                product_id: id,
-                quantity: quantity
-            }
-        })
+    static buyProduct(data){
+        return API().post("/product/buy",data)
+    }
+
+    static updateAddr(key,addrInfo){
+        const headers = {
+            Authorization: 'Basic '+key,
+        };
+        return API('http://ab89f5634dec446ae9e64d4631414d1e-931993644.ap-southeast-1.elb.amazonaws.com')
+        .post("/product/userbuy",addrInfo,{headers})
     }
 
     static getDetail(id){
         return API().get("/product",{
             params:{
-                product_id: id
+                productId: id
             }
         })
     }

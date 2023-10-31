@@ -17,11 +17,11 @@ const props = defineProps({
   let page = ref(1)
   let pagesize = ref(5)
 
-  let describe
-  let merchant
-  let Price
-  let Inventory
-  let expireTime
+  let describe=ref("")
+  let merchant=ref("")
+  let Price=ref(0)
+  let Inventory=ref(0)
+  let expireTime=ref("")
 
   onMounted(() => {
     load();
@@ -65,26 +65,39 @@ const props = defineProps({
     }
   }
 
-  const buy= async (id) => {
+  async function buy(id)  {
     buyId.value = id
     buyflag.value = true
+    let response
     try {
-      const response = await customerAPI.getDetail(id)
-      describe.value = response.data.describe
-      merchant.value = response.data.shopOwnerName
-      Price.value = response.data.Price
-      Inventory.value = response.data.quantity
-      expireTime.value = response.data.expireTime
+      response = await customerAPI.getDetail(id)
     } catch (error) {
       console.log(error)
     }
+    describe =  response.data.describe
+    merchant.value =  response.data.shopOwnerName
+    Price.value =  response.data.price
+    Inventory.value =  response.data.quantity
+    expireTime.value =  response.data.expireTime
   }
 
-  function confirmbuy() {
+  async function confirmbuy() {
     //push the quantity and productid to back end.
     try {
-      const response = customerAPI.buyProduct(buyId.value, buyQuantity.value)
+      let key = btoa(props.username+":"+props.password)
+      
+      let productInfo={
+        productId: parseInt(buyId.value,10),
+        quantity: parseInt(buyQuantity.value,10)
+      }
+      const response = await customerAPI.buyProduct(productInfo)
+      let addrInfo={
+        userName: props.username, 
+        address: userAddress.value
+      }
+      const addState = await customerAPI.updateAddr(key,addrInfo)
       console.log(response.status)
+      console.log(addState.status)
     } catch (error) {
       console.log(error)
     }
@@ -111,24 +124,19 @@ const props = defineProps({
 
 <template>
   <div v-if="buyflag" class="overlay">
-    <dev v-if="this.username == ''">
+    <div v-if="this.username == ''">
       <h3 class="backfont">Please Sign in or Sign up to continue process!</h3>
-    </dev>
-    <dev v-else>
+    </div>
+    <div v-else>
       <div class="backfont">
         <h2>Detail of the product</h2>
-        <dev>
-          <p>describe:</p>
-          <p>{{ describe }}</p>
-          <p>merchant:</p>
-          <p>{{ merchant }}</p>
-          <p>price:</p>
-          <p>{{ Price }}</p>
-          <p>inventory:</p>
-          <p>{{ Inventory }}</p>
-          <p>expireTime:</p>
-          <p>{{ expireTime }}</p>
-        </dev>
+        <div>
+          <p><div class="title">describe: </div>{{ describe }}</p>
+          <p><div class="title">merchant: </div> {{ merchant }}</p>
+          <p><div class="title">price:</div> {{ Price }}</p>
+          <p><div class="title">inventory:</div> {{ Inventory }}</p>
+          <p><div class="title">expireTime:</div> {{ expireTime }}</p>
+        </div>
         <p>your name: {{this.username}}</p>
         <p>your address please:</p>
         <textarea v-model="userAddress" :placeholder="userAddress"></textarea>
@@ -137,7 +145,7 @@ const props = defineProps({
         <br>
       </div>
       <button @click="confirmbuy">confirm</button>
-    </dev>
+    </div>
     <button @click="buyflag=false">close</button>
   </div>
 
@@ -164,6 +172,9 @@ const props = defineProps({
 <style scoped>
 .backfont{
   color:azure;
+}
+.title{
+  color: red;
 }
 .itemPic{
   width: 100%;

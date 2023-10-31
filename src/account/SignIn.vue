@@ -36,23 +36,27 @@ function NoSign(){
 </script>
 
 <template>
-  <h2 class="backfont">Log in</h2>
-  <br>
-  <h4 class="backfont" >Continue your exciting fight fight!</h4>
-  <br>
-  <p class="backfont"> Username: <input v-model="username" placeholder="Username"></p>
-  <p class="backfont"> Password: <input type="password" v-model="password" placeholder="Password"></p>
 
-  <p v-if="emptyerrorMessage" style="color: red">{{ emptyerrorMessage }}</p>
-  <p v-if="verifyerrorMessage" style="color: red">{{ verifyerrorMessage }}</p>
-  <!--  <p v-else>{{ }}</p>-->
 
-  <button class="Signbutton" @click="log">Log in</button>
+    <h2 class="backfont">Log in</h2>
+    <br>
+    <h4 class="backfont" >Continue your food Shopping!</h4>
+    <br>
+    <p class="backfont"> Username: <input v-model="username" placeholder="Username"></p>
+    <p class="backfont"> Password: <input type="password" v-model="password" placeholder="Password"></p>
+    
+    <p v-if="emptyerrorMessage" style="color: red">{{ emptyerrorMessage }}</p>
+    <p v-if="verifyerrorMessage" style="color: red">{{ verifyerrorMessage }}</p>
+    <!--  <p v-else>{{ }}</p>-->
+    
+    <button class="Signbutton" @click="log">Log in</button>
+    
+    <button class="Signbutton" @click="NoSign">Quit</button>
 
-  <button class="Signbutton" @click="NoSign">Quit</button>
 </template>
 
 <style>
+
 .Signbutton {
   height: 35px;
   width: 150px;
@@ -69,5 +73,6 @@ function NoSign(){
 
 .backfont{
   color: azure;
+  font-size: 40px;
 }
 </style>

@@ -18,7 +18,7 @@ let pic_path = ref('')
 let describe = ref('')
 let price = ref(0)
 let quantity = ref(0)
-
+let expireTime = ref(20231010)
   onMounted(() => {
       load();
   });
@@ -56,18 +56,20 @@ let quantity = ref(0)
   }
 
 // every time add/delete one product, we flash the page to get the new product list
-  const newProduct = async() =>{
+  function newProduct() {
     let data;
-    let username = props.username.value
+    let username = props.username
     data = {
-      username,
-      pic_path,
-      describe,
-      price,
-      quantity
+      username: String(username),
+      picPath: pic_path.value,
+      describe: describe.value,
+      price: Number(price.value),
+      quantity: Number(quantity.value),
+      expireTime: String(expireTime.value)
     }
     try {
-      const response = await merchantAPI.createProduct(data)
+      console.log(pic_path.value)
+      const response = merchantAPI.createProduct(data)
       console.log(response.status)
     } catch (error) {
       console.log(error)
@@ -76,8 +78,10 @@ let quantity = ref(0)
 
   function deleteProduct(itemid) {
     try {
-      const response = merchantAPI.deleteProduct(itemid)
+      console.log(itemid)
+      const response = merchantAPI.deleteProduct(String(itemid))
       console.log(response.status)
+      load()
     } catch (error) {
       console.log(error)
     }
@@ -100,28 +104,34 @@ let quantity = ref(0)
       getPage(page.value)
     }
   }
+  function closeOverlay(){
+    add=false
+    load()
+  }
 </script>
 
 <template>
   <div v-if="add" class="overlay">
-    <addpro>
+    <div class="backfont">
       <h3>Put the information of the product</h3>
       <br>
-      <p>picture:</p>
-      <textarea v-model="pic_path" :placeholder="pic_path">picture:</textarea>
+      <p>picture: </p>
+      <textarea v-model="pic_path" placeholder="Enter picture path">picture:</textarea>
       <br>
       <p>describe:</p>
-      <textarea v-model="describe" :placeholder="describe"></textarea>
+      <textarea v-model="describe" placeholder="Food describe"></textarea>
       <br>
       <p>price:</p>
-      <textarea v-model="price" :placeholder="price"></textarea>
+      <textarea v-model="price" placeholder="Enter price"></textarea>
       <br>
       <p>quantity:</p>
-      <textarea v-model="quantity" :placeholder="quantity"></textarea>
+      <textarea v-model="quantity" placeholder="quantity"></textarea>
       <br>
-    </addpro>
+      <p>expireTime: </p>
+      <textarea v-model="expireTime" placeholder="yyyymmdd"> </textarea>
+    </div>
     <button @click="newProduct">confirm</button>
-    <button @click="add=false">close</button>
+    <button @click="closeOverlay">close</button>
   </div>
   <!--every time add/delete one product, we flash the page to get the new product list-->
 
@@ -132,22 +142,22 @@ let quantity = ref(0)
 
     <h3>Your products:</h3>
 
-    <dev v-if="productNumber == 0">
+    <div v-if="productNumber == 0">
       <h4>Seems you don't have any product...</h4>
       <h4>Create your first by click the right top button!</h4>
-    </dev>
-    <dev v-else>
+    </div>
+    <div v-else>
       <div class="productContainer">
         <!--      for the card in the equipments     -->
         <div v-for="product in products">
-          <p class="product" :id="product.itemId">
-            <img :src="product.picPath">
+          <p class="product" :id="product.productId">
+            <img class="img" :src="product.picPath">
             <p>{{ product.describe }}</p>
-            <button @click="deleteProduct(product.itemid)">delete</button>
+            <button @click="deleteProduct(product.productId)">delete</button>
           </p>
         </div>
       </div>
-    </dev>
+    </div>
 
     <button @click="previous_page">previous</button>
     <text>{{ page }}</text>
@@ -157,6 +167,13 @@ let quantity = ref(0)
 </template>
 
 <style scoped>
+.backfont{
+  color:azure
+}
+.img{
+  height: 70%;
+  width: 100%;
+}
 .overlay {
   position: absolute;
   width: 100%;

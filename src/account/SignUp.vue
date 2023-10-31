@@ -21,6 +21,9 @@ function Sign() {
   if (password1.value == password2.value) {
     console.log("matched");
     try {
+      let formData = new URLSearchParams();
+      formData.append('username', username.value);
+      formData.append('password',  password1.value);
       const response = accountAPI.signup(username.value, password1.value)
       console.log(response);
       emit('unm', username.value)
