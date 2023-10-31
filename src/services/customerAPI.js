@@ -23,7 +23,7 @@ class customerAPI {
         const headers = {
             Authorization: 'Basic '+key,
         };
-        return API('http://ab89f5634dec446ae9e64d4631414d1e-931993644.ap-southeast-1.elb.amazonaws.com')
+        return API()
         .post("/product/userbuy",addrInfo,{headers})
     }
 
