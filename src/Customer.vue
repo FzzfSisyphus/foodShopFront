@@ -96,6 +96,7 @@ const props = defineProps({
         address: userAddress.value
       }
       const addState = await customerAPI.updateAddr(key,addrInfo)
+      buyflag.value = false
       console.log(response.status)
       console.log(addState.status)
     } catch (error) {
