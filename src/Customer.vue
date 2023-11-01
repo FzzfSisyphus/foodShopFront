@@ -124,7 +124,7 @@ const props = defineProps({
 
 <template>
   <div v-if="buyflag" class="overlay">
-    <div v-if="this.username == ''">
+    <div v-if="props.username == ''">
       <h3 class="backfont">Please Sign in or Sign up to continue process!</h3>
     </div>
     <div v-else>
@@ -137,7 +137,7 @@ const props = defineProps({
           <p><div class="title">inventory:</div> {{ Inventory }}</p>
           <p><div class="title">expireTime:</div> {{ expireTime }}</p>
         </div>
-        <p>your name: {{this.username}}</p>
+        <p>your name: {{props.username}}</p>
         <p>your address please:</p>
         <textarea v-model="userAddress" :placeholder="userAddress"></textarea>
         <p>how many do you want:</p>
