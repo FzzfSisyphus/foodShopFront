@@ -56,7 +56,7 @@ let expireTime = ref(20231010)
   }
 
 // every time add/delete one product, we flash the page to get the new product list
-  function newProduct() {
+  async function newProduct() {
     let data;
     let username = props.username
     data = {
@@ -69,21 +69,21 @@ let expireTime = ref(20231010)
     }
     try {
       console.log(pic_path.value)
-      const response = merchantAPI.createProduct(data)
+      const response = await merchantAPI.createProduct(data)
       console.log(response.status)
-      load()
+      await load()
       add.value = false
     } catch (error) {
       console.log(error)
     }
   }
 
-  function deleteProduct(itemid) {
+  async function deleteProduct(itemid) {
     try {
       console.log(itemid)
-      const response = merchantAPI.deleteProduct(String(itemid))
+      const response = await merchantAPI.deleteProduct(String(itemid))
       console.log(response.status)
-      load()
+      await load()
     } catch (error) {
       console.log(error)
     }
