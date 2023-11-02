@@ -150,7 +150,7 @@ const props = defineProps({
   </div>
 
   <div>
-    <h2>Enjoy Shopping</h2>
+    <h2>Enjoy Shopping ISS-SE</h2>
 
     <div class="productContainer">
       <!--      for the card in the equipments     -->
