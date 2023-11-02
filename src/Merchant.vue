@@ -71,6 +71,7 @@ let expireTime = ref(20231010)
       console.log(pic_path.value)
       const response = merchantAPI.createProduct(data)
       console.log(response.status)
+      load()
       add.value = false
     } catch (error) {
       console.log(error)
